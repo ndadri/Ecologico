@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+<div class="reportes-container">
+    <h2>Muro de Reportes Comunitarios</h2>
+    <div id="lista-reportes">
+        <p style="text-align: center; color: #7f8c8d;">Cargando reportes...</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", cargarReportes);
+
+    function cargarReportes() {
+        fetch('/api/reportes')
+            .then(res => res.json())
+            .then(data => {
+                const contenedor = document.getElementById('lista-reportes');
+                
+                if (data.length === 0) {
+                    contenedor.innerHTML = '<p style="text-align: center;">No hay reportes todavía. ¡Sé el primero en crearlo en la página de Inicio!</p>';
+                    return;
+                }
+
+                contenedor.innerHTML = ''; 
+                
+                data.forEach(r => {
+                    const card = `
+                        <div class="reporte-card">
+                            <div class="reporte-header">
+                                <h3>${r.titulo}</h3>
+                                <select onchange="cambiarEstado(${r.id}, this.value)" class="estado-select">
+                                    <option value="Pendiente" ${r.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                                    <option value="En Proceso" ${r.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
+                                    <option value="Solucionado" ${r.estado === 'Solucionado' ? 'selected' : ''}>Solucionado</option>
+                                </select>
+                            </div>
+                            <p class="meta">Categoría: <b>${r.categoria}</b> | Autor: <b>${r.autor}</b></p>
+                            <p>${r.descripcion || 'Sin descripción'}</p>
+                            
+                            ${r.ruta_imagen ? `<img src="${r.ruta_imagen}" alt="Evidencia" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin: 15px 0;">` : ''}
+                            
+                            <hr>
+                            <div class="comentarios-section">
+                                <h4>Comentarios</h4>
+                                <div id="comentarios-${r.id}" class="lista-comentarios">
+                                    <button onclick="verComentarios(${r.id})" class="btn-small">Ver Comentarios</button>
+                                </div>
+                                <form onsubmit="agregarComentario(event, ${r.id})" class="form-comentario">
+                                    <input type="text" name="contenido" placeholder="Escribe un comentario..." required style="flex: 1;">
+                                    <input type="hidden" name="usuario_id" value="1">
+                                    <button type="submit" class="btn-small">Comentar</button>
+                                </form>
+                            </div>
+                        </div>
+                    `;
+                    contenedor.innerHTML += card;
+                });
+            })
+            .catch(err => console.error("Error al cargar los reportes:", err));
+    }
+
+    function cambiarEstado(id, nuevoEstado) {
+        fetch(`/api/reportes/${id}/estado`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({estado: nuevoEstado})
+        }).then(() => alert('¡Estado actualizado!'));
+    }
+
+    function verComentarios(id) {
+        fetch(`/api/reportes/${id}/comentarios`)
+            .then(res => res.json())
+            .then(data => {
+                const div = document.getElementById(`comentarios-${id}`);
+                if(data.length === 0) {
+                    div.innerHTML = '<p class="sin-comentarios">No hay comentarios aún.</p>';
+                } else {
+                    div.innerHTML = data.map(c => `
+                        <div class="comentario-item">
+                            <b>${c.autor || 'Usuario'}:</b> ${c.contenido}
+                        </div>
+                    `).join('');
+                }
+            });
+    }
+
+    function agregarComentario(e, reporteId) {
+        e.preventDefault();
+        const form = e.target;
+        const data = Object.fromEntries(new FormData(form));
+
+        fetch(`/api/reportes/${reporteId}/comentarios`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        }).then(() => {
+            form.reset(); 
+            verComentarios(reporteId); 
+        });
+    }
+</script>
+{% endblock %}

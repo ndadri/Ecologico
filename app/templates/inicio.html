@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+<div class="form-container highlight-box">
+    <h2>Registrar Nuevo Reporte</h2>
+    <form id="reporteForm">
+        <div class="form-group">
+            <label>Título del problema</label>
+            <input type="text" name="titulo" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Descripción</label>
+            <textarea name="descripcion" rows="3" required></textarea>
+        </div>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Categoría</label>
+                <select name="categoria_id" id="select-categorias" required>
+                    <option value="">Cargando...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Autor (Usuario)</label>
+                <select name="usuario_id" id="select-usuarios" required>
+                    <option value="">Cargando...</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Evidencia Fotográfica</label>
+            <input type="file" name="imagen" accept="image/*" required>
+        </div>
+        
+        <button type="submit" class="btn-large">Subir Reporte</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        fetch('/api/usuarios').then(res => res.json()).then(data => {
+            document.getElementById('select-usuarios').innerHTML = data.map(u => `<option value="${u.id}">${u.nombre}</option>`).join('');
+        });
+        fetch('/api/categorias').then(res => res.json()).then(data => {
+            document.getElementById('select-categorias').innerHTML = data.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+        });
+    });
+
+    document.getElementById('reporteForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch('/api/reportes', {
+            method: 'POST',
+            body: new FormData(this)
+        }).then(res => res.json()).then(data => {
+            if(data.status === 'success') {
+                alert('¡Reporte publicado con éxito!');
+                this.reset();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    });
+</script>
+{% endblock %}

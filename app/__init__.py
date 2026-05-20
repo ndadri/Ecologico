@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from dotenv import load_dotenv
 from app.database.models import db
+from app.routes.web_routes import web_bp
 
 # Carga las variables de tu archivo .env (donde está la conexión a SQL Server)
 load_dotenv()
@@ -24,6 +25,7 @@ def create_app():
     # Importamos las rutas desde la carpeta routes
     from app.routes.base_routes import base_bp
     from app.routes.reporte_routes import reporte_bp
+    app.register_blueprint(web_bp)
     
     # Le decimos a Flask que las active
     app.register_blueprint(base_bp)

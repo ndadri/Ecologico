@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>EcoReport</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <h2>EcoReport</h2>
+        <ul>
+            <li><a href="{{ url_for('web.inicio') }}">Inicio (Crear Reporte)</a></li>
+            <li><a href="{{ url_for('web.muro_reportes') }}">Muro Comunitario</a></li>
+            <li><a href="{{ url_for('web.administracion') }}">Administración</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        {% block contenido %}{% endblock %}
+    </div>
+</body>
+</html>

@@ -249,3 +249,42 @@ hr {
         grid-template-columns: 1fr;
     }
 }
+
+/* ---- NAVEGACIÓN GLOBAL ---- */
+.navbar {
+    background-color: var(--primary-color);
+    padding: 15px 30px;
+    border-radius: var(--border-radius);
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.navbar h2 {
+    color: white;
+    margin: 0;
+    border-bottom: none;
+}
+
+.navbar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 10px 15px;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+}
+
+.navbar a:hover {
+    background-color: var(--primary-hover);
+}

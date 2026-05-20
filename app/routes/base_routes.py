@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.services.usuario_service import UsuarioService
 from app.services.categoria_service import CategoriaService
+from flask import Blueprint, request, jsonify, render_template
 
 base_bp = Blueprint('base', __name__)
 
@@ -31,3 +32,8 @@ def crear_categoria():
 @base_bp.route('/api/categorias', methods=['GET'])
 def listar_categorias():
     return jsonify(CategoriaService.listar_categorias())
+
+@base_bp.route('/', methods=['GET'])
+def inicio():
+    # En lugar de un JSON, ahora devolvemos la interfaz gráfica
+    return render_template('index.html')

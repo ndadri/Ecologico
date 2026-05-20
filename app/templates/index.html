@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoReport - Panel Integral</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🌱 EcoReport System</h1>
+        
+        <div class="admin-grid">
+            <div class="form-container">
+                <h2>👤 Nuevo Usuario</h2>
+                <form id="usuarioForm">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" name="email" required>
+                    </div>
+                    <button type="submit">Registrar Usuario</button>
+                </form>
+            </div>
+
+            <div class="form-container">
+                <h2>🏷️ Nueva Categoría</h2>
+                <form id="categoriaForm">
+                    <div class="form-group">
+                        <label>Nombre de Categoría</label>
+                        <input type="text" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <input type="text" name="descripcion" required>
+                    </div>
+                    <button type="submit">Crear Categoría</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="form-container highlight-box">
+            <h2>📸 Registrar Nuevo Reporte</h2>
+            <form id="reporteForm">
+                <div class="form-group">
+                    <label>Título del problema</label>
+                    <input type="text" name="titulo" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea name="descripcion" rows="2" required></textarea>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select name="categoria_id" id="select-categorias" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Autor (Usuario)</label>
+                        <select name="usuario_id" id="select-usuarios" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Evidencia Fotográfica</label>
+                    <input type="file" name="imagen" accept="image/*" required>
+                </div>
+                
+                <button type="submit" class="btn-large">Subir Reporte</button>
+            </form>
+        </div>
+
+        <div class="reportes-container">
+            <h2>🌍 Muro de Reportes Comunitarios</h2>
+            <div id="lista-reportes">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // Al cargar la página, ejecutar todo esto
+        document.addEventListener("DOMContentLoaded", () => {
+            cargarUsuarios();
+            cargarCategorias();
+            cargarReportes();
+        });
+
+        // 1. CARGAR DATOS PARA LOS SELECTS
+        function cargarUsuarios() {
+            fetch('/api/usuarios').then(res => res.json()).then(data => {
+                const select = document.getElementById('select-usuarios');
+                select.innerHTML = data.map(u => `<option value="${u.id}">${u.nombre} (${u.rol})</option>`).join('');
+            });
+        }
+
+        function cargarCategorias() {
+            fetch('/api/categorias').then(res => res.json()).then(data => {
+                const select = document.getElementById('select-categorias');
+                select.innerHTML = data.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+            });
+        }
+
+        // 2. CREAR USUARIO
+        document.getElementById('usuarioForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(this));
+            fetch('/api/usuarios', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            }).then(() => {
+                alert('Usuario creado');
+                this.reset();
+                cargarUsuarios(); // Actualizar lista desplegable
+            });
+        });
+
+        // 3. CREAR CATEGORÍA
+        document.getElementById('categoriaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(this));
+            fetch('/api/categorias', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            }).then(() => {
+                alert('Categoría creada');
+                this.reset();
+                cargarCategorias(); // Actualizar lista desplegable
+            });
+        });
+
+        // 4. CREAR REPORTE (Con imagen)
+        document.getElementById('reporteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch('/api/reportes', {
+                method: 'POST',
+                body: new FormData(this) // FormData maneja el archivo automáticamente
+            }).then(res => res.json()).then(data => {
+                if(data.status === 'success') {
+                    alert('Reporte publicado!');
+                    this.reset();
+                    cargarReportes();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            });
+        });
+
+        // 5. CARGAR Y MOSTRAR REPORTES CON SUS FUNCIONES
+        function cargarReportes() {
+            fetch('/api/reportes').then(res => res.json()).then(data => {
+                const contenedor = document.getElementById('lista-reportes');
+                contenedor.innerHTML = '';
+                
+                data.forEach(r => {
+                    const card = `
+                        <div class="reporte-card">
+                            <div class="reporte-header">
+                                <h3>${r.titulo}</h3>
+                                <select onchange="cambiarEstado(${r.id}, this.value)" class="estado-select ${r.estado.replace(' ', '-')}">
+                                    <option value="Pendiente" ${r.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                                    <option value="En Proceso" ${r.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
+                                    <option value="Solucionado" ${r.estado === 'Solucionado' ? 'selected' : ''}>Solucionado</option>
+                                </select>
+                            </div>
+                            <p class="meta">Categoría: <b>${r.categoria}</b> | Autor: <b>${r.autor}</b></p>
+                            
+                            <hr>
+                            <div class="comentarios-section">
+                                <h4>Comentarios</h4>
+                                <div id="comentarios-${r.id}" class="lista-comentarios">
+                                    <button onclick="verComentarios(${r.id})" class="btn-small">Cargar Comentarios</button>
+                                </div>
+                                <form onsubmit="agregarComentario(event, ${r.id})" class="form-comentario">
+                                    <input type="text" name="contenido" placeholder="Escribe un comentario..." required>
+                                    <input type="hidden" name="usuario_id" value="1"> <button type="submit" class="btn-small">Comentar</button>
+                                </form>
+                            </div>
+                        </div>
+                    `;
+                    contenedor.innerHTML += card;
+                });
+            });
+        }
+
+        // 6. CAMBIAR ESTADO
+        function cambiarEstado(id, nuevoEstado) {
+            fetch(`/api/reportes/${id}/estado`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({estado: nuevoEstado})
+            }).then(() => alert('Estado actualizado'));
+        }
+
+        // 7. VER COMENTARIOS
+        function verComentarios(id) {
+            fetch(`/api/reportes/${id}/comentarios`).then(res => res.json()).then(data => {
+                const div = document.getElementById(`comentarios-${id}`);
+                if(data.length === 0) {
+                    div.innerHTML = '<p class="sin-comentarios">No hay comentarios aún.</p>';
+                } else {
+                    div.innerHTML = data.map(c => `
+                        <div class="comentario-item">
+                            <b>${c.autor}:</b> ${c.contenido}
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        // 8. AGREGAR COMENTARIO
+        function agregarComentario(e, reporteId) {
+            e.preventDefault();
+            const form = e.target;
+            const data = Object.fromEntries(new FormData(form));
+            
+            fetch(`/api/reportes/${reporteId}/comentarios`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            }).then(() => {
+                form.reset();
+                verComentarios(reporteId); // Recargar comentarios
+            });
+        }
+    </script>
+</body>
+</html>

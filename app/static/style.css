@@ -1,0 +1,251 @@
+/* app/static/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+    --primary-color: #27ae60;
+    --primary-hover: #219150;
+    --bg-color: #f0f4f1;
+    --text-color: #2c3e50;
+    --card-bg: #ffffff;
+    --border-radius: 12px;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 30px 20px;
+}
+
+.container {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #34495e;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 10px;
+}
+
+/* Tarjetas (Contenedores principales) */
+.form-container, .reportes-container {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+    transition: transform 0.3s ease;
+}
+
+.form-container:hover {
+    transform: translateY(-2px);
+}
+
+/* Formulario */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #34495e;
+    font-size: 0.95rem;
+}
+
+input[type="text"], select, textarea, input[type="file"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e6ed;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f8faf9;
+}
+
+input[type="text"]:focus, textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.2);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Botón */
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 4px 6px rgba(39, 174, 96, 0.3);
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* Tarjetas de Reportes generadas dinámicamente */
+.reporte-card {
+    border: 1px solid #ecf0f1;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+    background-color: #fff;
+    border-left: 5px solid var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.reporte-info h3 {
+    margin: 0 0 12px 0;
+    color: #2c3e50;
+    font-size: 1.3rem;
+}
+
+.reporte-info p {
+    margin: 5px 0;
+    color: #7f8c8d;
+    font-size: 0.95rem;
+}
+
+.badge {
+    display: inline-block;
+    background-color: #f39c12;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+}
+/* ---- NUEVOS ESTILOS PARA EL PANEL INTEGRAL ---- */
+
+/* Diseño de cuadrícula para los formularios superiores */
+.admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.highlight-box {
+    border-top: 5px solid var(--primary-color);
+}
+
+/* Encabezado del reporte con el selector de estado al lado */
+.reporte-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.estado-select {
+    width: auto;
+    padding: 5px 10px;
+    font-weight: bold;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.meta {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #ecf0f1;
+    margin: 15px 0;
+}
+
+/* Sección de Comentarios */
+.comentarios-section h4 {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    color: #34495e;
+}
+
+.lista-comentarios {
+    background: #f8faf9;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    min-height: 40px;
+}
+
+.comentario-item {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.comentario-item:last-child {
+    border-bottom: none;
+}
+
+.sin-comentarios {
+    color: #95a5a6;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.form-comentario {
+    display: flex;
+    gap: 10px;
+}
+
+/* Botones Pequeños */
+.btn-small {
+    width: auto;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+
+.btn-large {
+    margin-top: 10px;
+    font-size: 1.2rem;
+    padding: 15px;
+}
+
+/* Responsividad para pantallas pequeñas */
+@media (max-width: 768px) {
+    .admin-grid, .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
